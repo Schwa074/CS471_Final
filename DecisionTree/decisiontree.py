@@ -5,7 +5,7 @@ import time
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 
 def run_decision_tree(data_feature_names, data_target_names, train_features, train_labels, validation_features, validation_labels, test_features, test_labels):
     start_time = time.time()
@@ -81,7 +81,9 @@ def run_decision_tree(data_feature_names, data_target_names, train_features, tra
     test_predictions = best_dt.predict(test_features)
 
     # Generate a classification report
-    print("Classification Report:\n", classification_report(test_labels, test_predictions))
+    print("Decision Tree Classification Report:\n", classification_report(test_labels, test_predictions, target_names=['isNotFraud', 'isFraud']))
+
+    print(f"Decision Tree Confusion matrix:\n " + str(confusion_matrix(test_labels, test_predictions)))
 
     end_time = time.time()
 

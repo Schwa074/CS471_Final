@@ -1,5 +1,6 @@
 import naivebayes as nb
 import DecisionTree.decisiontree as dt
+import RandomForest.randomforest as rf
 import pandas as pd
 import pickle
 from sklearn import preprocessing
@@ -40,7 +41,7 @@ print(data.head())  # First 5 rows
 print(data.shape)
 
 features = data[['type', 'amount', 'nameOrig', 'oldbalanceOrg', 'newbalanceOrig', 'nameDest', 'oldbalanceDest', 'newbalanceDest']]
-labels = data[['isFraud']]
+labels = data['isFraud']
 
 # Split data into training (60%), validation (20%), and test (20%) sets
 # First Split: 60% for training, 40% for further splitting into validation and test
@@ -56,9 +57,10 @@ train_labels = temp_labels
 
 dt.run_decision_tree(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
 
+rf.run_random_forest(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
 
 
 end_time = time.time()
 
-print("All algorithms completed.")
+print("\n --- All algorithms completed ---")
 print(f"Execution time of all algorithms: {end_time - start_time:.4f} seconds")

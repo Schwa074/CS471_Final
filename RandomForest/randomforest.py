@@ -24,14 +24,14 @@ def run_random_forest(data_feature_names, data_target_names, train_features, tra
     #         pickle.dump(dt, file)  # Save random forest model to a pickle for future use.
 
     # param_grid = {
-    #     'max_depth': np.arange(1, 11),  # Depth of the tree (1 to 10)
-    #     'min_samples_split': np.arange(2, 11)  # Minimum samples to split (2 to 10)
+    # 'n_estimators': [10, 20, 25, 30],
+    # 'max_depth': np.arange(1, 11)
     # }
-
+    
     # To be more efficient, took best param to avoid doing every possible param
     # See RandomForestBestParamOutput for inital run
     param_grid = {
-    'n_estimators': [10, 20, 25, 30],
+    'n_estimators': [30],
     'max_depth': [10]
     }
 
@@ -41,6 +41,8 @@ def run_random_forest(data_feature_names, data_target_names, train_features, tra
 
     # Plot hyperparameters vs performance (scores)
     results = grid_search.cv_results_
+    mean_scores = results['mean_test_score']
+
     print(f"Min mean test score: {min(results['mean_test_score'])}")
     print(f"Max mean test score: {max(results['mean_test_score'])}")
 
@@ -90,9 +92,12 @@ def run_random_forest(data_feature_names, data_target_names, train_features, tra
     end_time = time.time()
 
     # Visualize and interpret the random forest
-    # plt.figure(figsize=(12, 8))
-    # plot_tree(best_dt, filled=True, feature_names=data_feature_names, class_names=data_target_names, fontsize=10)
-    # plt.title("random forest Visualization")
+    # plt.figure(figsize=(8, 5))
+    # plt.plot(depths, mean_scores, marker='o', color='green')
+    # plt.xlabel('Max Depth')
+    # plt.ylabel('Mean Recall Score')
+    # plt.title('Effect of max_depth on Recall')
+    # plt.grid(True)
     # plt.show()
 
     print("--- Completed Random Forest evaluation ---")

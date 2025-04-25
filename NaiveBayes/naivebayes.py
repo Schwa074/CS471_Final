@@ -5,6 +5,7 @@ from sklearn.model_selection import GridSearchCV
 import time
 import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
 
 def run_naive_bayes(data_feature_names, data_target_names, train_features, train_labels, validation_features, validation_labels, test_features, test_labels):
     start_time = time.time()
@@ -20,8 +21,20 @@ def run_naive_bayes(data_feature_names, data_target_names, train_features, train
 
     # Get results
     results = grid_search.cv_results_
+    smoothing_values = results['param_var_smoothing'].data.astype(np.float64)
+    mean_scores = results['mean_test_score']
     print(f"Min mean test score: {min(results['mean_test_score'])}")
     print(f"Max mean test score: {max(results['mean_test_score'])}")
+
+    plt.figure(figsize=(8, 5))
+    plt.semilogx(smoothing_values, mean_scores, marker='o', color='teal')
+    plt.title("Hyperparameter Tuning: var_smoothing vs Recall")
+    plt.xlabel("var_smoothing (log scale)")
+    plt.ylabel("Mean Cross-Validated Recall")
+    plt.grid(True)
+    plt.gca().invert_xaxis()
+    plt.tight_layout()
+    plt.show()
 
     # Get best parameters and score
     best_params = grid_search.best_params_
@@ -43,15 +56,22 @@ def run_naive_bayes(data_feature_names, data_target_names, train_features, train
         with open(best_nb_path, "wb") as file:
             pickle.dump(best_nb, file)
 
+    # Training set evaluation
+    train_predictions = best_nb.predict(train_features)
+    print("Naive Bayes Classification Report on Training Set:\n", 
+        classification_report(train_labels, train_predictions, target_names=['isNotFraud', 'isFraud']))
+
+    print(f"Naive Bayes Confusion matrix on Training Set:\n {confusion_matrix(train_labels, train_predictions)}\n \n ")
+
     # Test the model
     test_predictions = best_nb.predict(test_features)
 
     # Generate classification report
-    print("Naive Bayes Classification Report:\n", 
+    print("Naive Bayes Classification Report on Testing Set:\n", 
           classification_report(test_labels, test_predictions, 
                              target_names=['isNotFraud', 'isFraud']))
 
-    print(f"Naive Bayes Confusion matrix:\n {confusion_matrix(test_labels, test_predictions)}")
+    print(f"Naive Bayes Confusion matrix on Testing Set:\n {confusion_matrix(test_labels, test_predictions)}\n \n ")
 
     end_time = time.time()
     print("--- Completed Naive Bayes evaluation ---")

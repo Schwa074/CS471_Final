@@ -77,21 +77,39 @@ def run_decision_tree(data_feature_names, data_target_names, train_features, tra
         with open(best_dt_path, "wb") as file:
             pickle.dump(best_dt, file)  # Save decision tree model to a pickle for future use.
 
+    # Evaluate on training set
+    train_predictions = best_dt.predict(train_features)
+
+    # Classification report for training set
+    print("Decision Tree Classification Report on Training Set:\n",
+        classification_report(train_labels, train_predictions, target_names=['isNotFraud', 'isFraud']))
+
+    # Confusion matrix for training set
+    print("Decision Tree Confusion Matrix on Training Set:\n",
+        confusion_matrix(train_labels, train_predictions))
+
     # Test the model on the test data
     test_predictions = best_dt.predict(test_features)
 
     # Generate a classification report
-    print("Decision Tree Classification Report:\n", classification_report(test_labels, test_predictions, target_names=['isNotFraud', 'isFraud']))
+    print("Decision Tree Classification Report on Testing Set:\n", classification_report(test_labels, test_predictions, target_names=['isNotFraud', 'isFraud']))
 
-    print(f"Decision Tree Confusion matrix:\n " + str(confusion_matrix(test_labels, test_predictions)))
+    print(f"Decision Tree Confusion matrix on Testing Set:\n " + str(confusion_matrix(test_labels, test_predictions)))
 
     end_time = time.time()
 
-    # Visualize and interpret the decision tree
-    # plt.figure(figsize=(12, 8))
-    # plot_tree(best_dt, filled=True, feature_names=data_feature_names, class_names=data_target_names, fontsize=10)
-    # plt.title("Decision Tree Visualization")
-    # plt.show()
-
     print("--- Completed Decision Tree evaluation ---")
     print(f"Execution time: {end_time - start_time:.4f} seconds\n")
+
+    # Visualize and interpret the decision tree - Not really viewable since it has a depth of 10 but it's under the images dir
+    plt.figure(figsize=(20, 10))  # Create a figure and set size
+    plot_tree(
+        best_dt,
+        filled=True,
+        feature_names=list(data_feature_names),
+        class_names=[str(name) for name in data_target_names],
+        fontsize=10
+    )
+    plt.suptitle("Decision Tree Visualization", fontsize=16)  # Use suptitle here
+    plt.savefig("images/decision_tree.png", dpi=300, bbox_inches='tight')
+    plt.show()

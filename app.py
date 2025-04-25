@@ -55,11 +55,11 @@ temp_features, temp_labels = SMOTE(random_state=130).fit_resample(train_features
 train_features = temp_features
 train_labels = temp_labels
 
-# dt.run_decision_tree(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
-
-# rf.run_random_forest(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
-
 nb.run_naive_bayes(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
+
+dt.run_decision_tree(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
+
+rf.run_random_forest(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
 
 end_time = time.time()
 

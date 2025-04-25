@@ -9,29 +9,18 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 def run_decision_tree(data_feature_names, data_target_names, train_features, train_labels, validation_features, validation_labels, test_features, test_labels):
     start_time = time.time()
-    # dt_path = './pickledData/decisionTreeModel.pickle'  # Path to the pickled decision tree model
 
-    # Load data from a pickle file or reading CSV file and pickle it if needed. Should only happen once
-    # try:
-    #     with open(dt_path, "rb") as file:
-    #         dt = pickle.load(file)
-    # except FileNotFoundError:
-    #     dt = DecisionTreeClassifier(random_state=42)
-    #     dt.fit(train_features, train_labels)
-    #     with open(dt_path, "wb") as file:
-    #         pickle.dump(dt, file)  # Save decision tree model to a pickle for future use.
-
-    # param_grid = {
-    #     'max_depth': np.arange(1, 11),  # Depth of the tree (1 to 10)
-    #     'min_samples_split': np.arange(2, 11)  # Minimum samples to split (2 to 10)
-    # }
+    param_grid = {
+        'max_depth': np.arange(1, 11),  # Depth of the tree (1 to 10)
+        'min_samples_split': np.arange(2, 11)  # Minimum samples to split (2 to 10)
+    }
 
     # To be more efficient, took best param to avoid doing every possible param
     # See DecisionTreeBestParamOutput for inital run
-    param_grid = {
-        'max_depth': [10],  
-        'min_samples_split': [2]
-    }
+    # param_grid = {
+    #     'max_depth': [10],  
+    #     'min_samples_split': [2]
+    # }
 
     # Perform Grid Search with cross-validation
     grid_search = GridSearchCV(DecisionTreeClassifier(random_state=42), param_grid, cv=5, scoring='recall')
@@ -42,21 +31,21 @@ def run_decision_tree(data_feature_names, data_target_names, train_features, tra
     print(f"Min mean test score: {min(results['mean_test_score'])}")
     print(f"Max mean test score: {max(results['mean_test_score'])}")
 
-    # See DecisionTreeHyperParamTune from inital run
-    # depth_range = np.arange(1, 11)  
-    # split_range = np.arange(2, 11)
+    See DecisionTreeHyperParamTune from inital run
+    depth_range = np.arange(1, 11)  
+    split_range = np.arange(2, 11)
 
-    # scores_matrix = results['mean_test_score'].reshape(len(depth_range), len(split_range))
+    scores_matrix = results['mean_test_score'].reshape(len(depth_range), len(split_range))
 
-    # plt.figure(figsize=(8, 6))
-    # plt.imshow(scores_matrix, interpolation='nearest', cmap='viridis')
-    # plt.colorbar(label="Mean Test Score")
-    # plt.xticks(np.arange(len(split_range)), split_range)  # x-axis: min_samples_split
-    # plt.yticks(np.arange(len(depth_range)), depth_range)  # y-axis: max_depth
-    # plt.xlabel('min_samples_split')
-    # plt.ylabel('max_depth')
-    # plt.title('Grid Search Performance: Hyperparameters vs Accuracy')
-    # plt.show()
+    plt.figure(figsize=(8, 6))
+    plt.imshow(scores_matrix, interpolation='nearest', cmap='viridis')
+    plt.colorbar(label="Mean Test Score")
+    plt.xticks(np.arange(len(split_range)), split_range)  # x-axis: min_samples_split
+    plt.yticks(np.arange(len(depth_range)), depth_range)  # y-axis: max_depth
+    plt.xlabel('min_samples_split')
+    plt.ylabel('max_depth')
+    plt.title('Grid Search Performance: Hyperparameters vs Accuracy')
+    plt.show()
 
     # Train the model using the best hyperparameters found
     best_params = grid_search.best_params_

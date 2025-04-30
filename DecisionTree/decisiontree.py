@@ -31,7 +31,7 @@ def run_decision_tree(data_feature_names, data_target_names, train_features, tra
     print(f"Min mean test score: {min(results['mean_test_score'])}")
     print(f"Max mean test score: {max(results['mean_test_score'])}")
 
-    See DecisionTreeHyperParamTune from inital run
+    # See DecisionTreeHyperParamTune from inital run
     depth_range = np.arange(1, 11)  
     split_range = np.arange(2, 11)
 
@@ -65,6 +65,30 @@ def run_decision_tree(data_feature_names, data_target_names, train_features, tra
         best_dt.fit(np.concatenate((train_features, validation_features)), np.concatenate((train_labels, validation_labels)))
         with open(best_dt_path, "wb") as file:
             pickle.dump(best_dt, file)  # Save decision tree model to a pickle for future use.
+
+    important_features = best_dt.feature_importances_
+
+    # Pair feature importances with names and sort them
+    feature_importance_pairs = list(zip(data_feature_names, important_features))
+    sorted_importances = sorted(feature_importance_pairs, key=lambda x: x[1], reverse=True)
+
+    print("\nTop 10 Important Features in Decision Tree:")
+    for feature, importance in sorted_importances[:10]:
+        print(f"{feature}: {importance:.4f}")
+
+    # Get top 10 for visualization
+    top_features = sorted_importances[:10]
+    features = [f[0] for f in top_features]
+    importances = [f[1] for f in top_features]
+
+    # Plot feature importance
+    plt.figure(figsize=(10, 6))
+    plt.barh(features, importances, color='skyblue')
+    plt.xlabel('Feature Importance')
+    plt.title('Top 10 Important Features - Decision Tree')
+    plt.gca().invert_yaxis()  # Highest at top
+    plt.tight_layout()
+    plt.show()
 
     # Evaluate on training set
     train_predictions = best_dt.predict(train_features)

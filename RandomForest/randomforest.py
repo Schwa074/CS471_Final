@@ -2,7 +2,7 @@ import pandas as pd
 import pickle
 from sklearn.model_selection import GridSearchCV
 import time
-from sklearn.tree import plot_tree # May be unneeded
+from sklearn.tree import plot_tree
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import matplotlib.pyplot as plt
@@ -64,10 +64,32 @@ def run_random_forest(data_feature_names, data_target_names, train_features, tra
         with open(best_dt_path, "rb") as file:
             best_dt = pickle.load(file)
     except FileNotFoundError:
-        best_dt = RandomForestClassifier(random_state=42, class_weight='balanced', **best_params)
+        best_dt = RandomForestClassifier(random_state=42, class_weight='recall', **best_params)
         best_dt.fit(np.concatenate((train_features, validation_features)), np.concatenate((train_labels, validation_labels)))
         with open(best_dt_path, "wb") as file:
             pickle.dump(best_dt, file)  # Save random forest model to a pickle for future use.
+
+    # Feature importance
+    important_features = best_dt.feature_importances_
+    feature_importance_pairs = list(zip(data_feature_names, important_features))
+    sorted_importances = sorted(feature_importance_pairs, key=lambda x: x[1], reverse=True)
+
+    print("\nTop 10 Important Features in Random Forest:")
+    for feature, importance in sorted_importances[:10]:
+        print(f"{feature}: {importance:.4f}")
+
+    # Plot top 10 feature importances
+    top_features = sorted_importances[:10]
+    features = [f[0] for f in top_features]
+    importances = [f[1] for f in top_features]
+
+    plt.figure(figsize=(10, 6))
+    plt.barh(features, importances, color='orange')
+    plt.xlabel('Feature Importance')
+    plt.title('Top 10 Important Features - Random Forest')
+    plt.gca().invert_yaxis()  # Highest on top
+    plt.tight_layout()
+    plt.show()
 
     # Predict on the training data
     train_predictions = best_dt.predict(train_features)
@@ -88,7 +110,7 @@ def run_random_forest(data_feature_names, data_target_names, train_features, tra
 
     end_time = time.time()
 
-    Visualize and interpret the random forest
+    # Visualize and interpret the random forest
     plt.figure(figsize=(8, 5))
     plt.plot(depths, mean_scores, marker='o', color='green')
     plt.xlabel('Max Depth')

@@ -7,7 +7,7 @@ from sklearn import preprocessing
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import train_test_split, GridSearchCV
 import time
-
+import seaborn as sns
 
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 import numpy as np
@@ -50,10 +50,29 @@ train_features, remaining_features, train_labels, remaining_labels = train_test_
 # Second Split: 50% of the remaining data for validation and 50% for testing
 validation_features, test_features, validation_labels, test_labels = train_test_split(remaining_features, remaining_labels, test_size=0.5, random_state=42)
 
+# Plot class distribution before SMOTE
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+sns.countplot(x=train_labels, palette="coolwarm")
+plt.title("Class Distribution Before SMOTE")
+plt.xlabel("Is Fraud")
+plt.ylabel("Count (millions)")
+
 # Use SMOTE to balance training data.
 temp_features, temp_labels = SMOTE(random_state=130).fit_resample(train_features, train_labels)
 train_features = temp_features
 train_labels = temp_labels
+
+# Plot class distribution after SMOTE
+plt.subplot(1, 2, 2)
+sns.countplot(x=temp_labels, palette="coolwarm")
+plt.title("Class Distribution After SMOTE")
+plt.xlabel("Is Fraud")
+plt.ylabel("Count (millions)")
+
+plt.tight_layout()
+plt.show()
 
 nb.run_naive_bayes(features, labels, train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
 
